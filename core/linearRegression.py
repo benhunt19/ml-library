@@ -140,4 +140,4 @@ class LinearRegression:
         name (string): The name of the file
         """
         assert self.ani is not None
-        self.ani.save(f'{name}.gif', writer=PillowWriter(fps=30))
+        self.ani.save(f'media/{name}.gif', writer=PillowWriter(fps=30))

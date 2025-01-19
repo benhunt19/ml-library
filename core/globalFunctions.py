@@ -41,7 +41,7 @@ def euclidianDistance(row1: pd.Series, row2:pd.Series) -> float:
     row2 (Series): The second row of data to compare
     """
     sum = 0
-    for i in range(row1.shape[0]):
-        sum += row1.iloc[i]**2 + row2.iloc[i]**2
+    for i in range(len(row1)):
+        sum += pow(row1.iat[i] - row2.iat[i], 2)
     return pow(sum, 0.5)
     

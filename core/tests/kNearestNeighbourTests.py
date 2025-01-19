@@ -74,20 +74,20 @@ def testVisuliseNeighbours() -> None:
     
     # Three dimensions for graphical interpretation
     cols = pd.Index([
-        'bathrooms',
+        'sqft_lot',
         'sqft_living',
         'price',
-
     ])
     
     # Select certain columns from the DataFrame
-    rowLim = 200
+    rowLim = 123
     dataToCompare = data.loc[0:rowLim, cols].copy()
     values = data.loc[0:rowLim, 'price'].copy()
     KNN = KNearestNeighbours(dataToCompare, values)
     KNN.scaleData()
     testRow = data.loc[rowLim + 1, cols].copy()
-    K = 10
-    neighbours = KNN.findNeighbours(testRow.to_frame(), K)
+    # print('testRow', testRow)
+    K = 8
+    neighbours = KNN.findNeighbours(testRow, K)
     KNN.showPlot()
-    KNN.saveAnimation(name='kNearestNeighbours')
+    # KNN.saveAnimation(name='kNearestNeighbours')

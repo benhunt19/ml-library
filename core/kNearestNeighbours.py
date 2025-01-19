@@ -22,8 +22,9 @@ class KNearestNeighbours:
     """
     def __init__(self, data: pd.DataFrame, values: pd.Series) -> None:
         self.data = data                    # Dataframe for data, one column per feature
-        self.values = values                # Series for the avtual values
+        self.values = values                # Series for the actual values
         self.neighbours = pd.DataFrame([])  # Initialise a blank dataframe for the neighbours
+        self.testDataPoint = None           # Create a blank test data point
     
     def scaleData(self):
         """
@@ -48,9 +49,15 @@ class KNearestNeighbours:
         
         """
         self.K = K
+        self.testDataPoint = dataPoint.copy()
         indexStore = np.array([])
         distanceStore = np.array([])
-        scaledDataPoint = scaleData(dataPoint)[0]
+        scaledDataPoint = dataPoint
+        scaledDataPoint -= self.mean
+        scaledDataPoint /= self.variance.pow(0.5) 
+        print(scaledDataPoint)
+        self.scaledDataPoint = scaledDataPoint
+        print(dataPoint)
 
         for i in range(self.scaledData.shape[0]):
             distance = euclidianDistance(scaledDataPoint.squeeze(), self.scaledData.iloc[i, :])
@@ -60,7 +67,9 @@ class KNearestNeighbours:
             elif np.max(distanceStore) > distance:
                 indexStore[np.argmax(distanceStore)] = i
                 distanceStore[np.argmax(distanceStore)] = distance
-        
+                
+        self.scaledNeighbours = self.scaledData.loc[indexStore]
+                
         self.neighbours = self.data.loc[indexStore].copy()
         return self.neighbours
     
@@ -78,7 +87,7 @@ class KNearestNeighbours:
 
         # Scatter plot of the first two columns and the regression line
         legend = ["Data"]
-
+        ax.ticklabel_format(style='plain')
         cols = self.data.columns
         scatterAll = ax.scatter(
             self.data[cols[0]],
@@ -86,7 +95,7 @@ class KNearestNeighbours:
             self.data[cols[2]],
             c= self.data[cols[0]],
             marker='o',
-            alpha=0.2  # Set transparency level
+            alpha=0.16  # Set transparency level
         )
         if len(self.neighbours) > 0:
             scatterNeighbours = ax.scatter(
@@ -98,6 +107,17 @@ class KNearestNeighbours:
                 alpha=1  # Set transparency level
             )
             legend.append(f'{self.K} Nearest Neighoburs')
+        
+        if type(self.testDataPoint) != type(None):
+            scatterTestPoint = ax.scatter(
+                self.testDataPoint.loc[cols[0]],
+                self.testDataPoint.loc[cols[1]],
+                self.testDataPoint.loc[cols[2]],
+                c='red',
+                marker='o',
+                alpha=1  # Set transparency level
+            )
+            legend.append(f'Test Data Point')
             
         ax.set_xlabel(cols[0]); ax.set_ylabel(cols[1]); ax.set_zlabel(cols[2])
         ax.legend(legend)
@@ -121,4 +141,64 @@ class KNearestNeighbours:
         name (string): The name of the file
         """
         assert self.ani is not None
-        self.ani.save(f'{name}.gif', writer=PillowWriter(fps=30))
+        self.ani.save(f'media/{name}.gif', writer=PillowWriter(fps=30))
+    
+    def showPlotScaled(self) -> None:
+        """
+        Description:
+        Create a 3d plot of the first three dimensions 
+        for the scaled data
+        
+        Parameters:
+        None
+        """
+        # Create a 3D figure
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+
+        # Scatter plot of the first two columns and the regression line
+        legend = ["Data"]
+        ax.ticklabel_format(style='plain')
+        cols = self.data.columns
+        scatterAll = ax.scatter(
+            self.scaledData[cols[0]],
+            self.scaledData[cols[1]],
+            self.scaledData[cols[2]],
+            c= self.data[cols[0]],
+            marker='o',
+            alpha=0.16  # Set transparency level
+        )
+        if len(self.scaledNeighbours) > 0:
+            scatterNeighbours = ax.scatter(
+                self.scaledNeighbours[cols[0]],
+                self.scaledNeighbours[cols[1]],
+                self.scaledNeighbours[cols[2]],
+                c='black',
+                marker='o',
+                alpha=1  # Set transparency level
+            )
+            legend.append(f'{self.K} Nearest Neighoburs')
+        
+        if type(self.testDataPoint) != type(None):
+            scatterTestPoint = ax.scatter(
+                self.scaledDataPoint.loc[cols[0]],
+                self.scaledDataPoint.loc[cols[1]],
+                self.scaledDataPoint.loc[cols[2]],
+                c='red',
+                marker='o',
+                alpha=1  # Set transparency level
+            )
+            legend.append(f'Test Data Point')
+            
+        ax.set_xlabel(cols[0]); ax.set_ylabel(cols[1]); ax.set_zlabel(cols[2])
+        ax.legend(legend)
+        ax.set_title('K Nearest Neighbours')
+        # Animation function to update view angle
+        def update(frame):
+            ax.view_init(elev=30, azim=frame)  # Change azimuth angle
+            return ax,
+
+        # Create animation
+        self.ani =  FuncAnimation(fig, update, frames=360, interval=30, blit=False)
+        
+        plt.show()
