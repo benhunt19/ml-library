@@ -8,9 +8,11 @@ from core.routers.testRouter import *
 if __name__ == '__main__':
     
     # GRADIENT DESCENT
-    testGradientDescent()
+    # testGradientDescent()
     # testAnalyticalSolution()
     # testPlotting()
 
     # K NEAREST NEIGHBOURS
-    
+    # testScaleData()
+    # testKNearestNeighbours()
+    testVisuliseNeighbours()

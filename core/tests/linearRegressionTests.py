@@ -6,7 +6,7 @@ def testGradientDescent() -> None:#
     Test gradient descent on a 2x featureset: x and y.
     The labels are a 1d series that are related to x and y
     
-    Params:
+    Parameters:
     None
     """
     # generate random datapoints
@@ -32,6 +32,13 @@ def testGradientDescent() -> None:#
     linReg.showPlot()
 
 def testAnalyticalSolution() -> None:
+    """
+    Description: Test the analytical solition for linear regression
+    
+    Parameters:
+    None
+    
+    """
     # generate random datapoints
     maxInt = 50
     c = 20 # 'y intercept'
@@ -54,6 +61,13 @@ def testAnalyticalSolution() -> None:
     linReg.showPlot()
 
 def testPlotting() -> None:
+    """
+    Description:
+    Test plotting the data with the linear regression line
+    
+    Parameters:
+    None
+    """
     # generate random datapoints
     maxInt = 50
     c = 20 # 'y intercept'

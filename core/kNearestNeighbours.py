@@ -3,6 +3,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.animation import FuncAnimation, PillowWriter
+from core.globalFunctions import scaleData, euclidianDistance
 
 class KNearestNeighbours:
     """
@@ -22,4 +23,102 @@ class KNearestNeighbours:
     def __init__(self, data: pd.DataFrame, values: pd.Series) -> None:
         self.data = data                    # Dataframe for data, one column per feature
         self.values = values                # Series for the avtual values
+        self.neighbours = pd.DataFrame([])  # Initialise a blank dataframe for the neighbours
+    
+    def scaleData(self):
+        """
+        Description:
+        Scales the data along by the mean and squashes in by the variance.
+        This essentially normalises the data so when the nearest neighbour
+        algo is run, the difference values are weighted correctly.
         
+        Parameters:
+        None
+        """
+        self.scaledData, self.mean, self.variance = scaleData(self.data)
+    
+    def findNeighbours(self, dataPoint: pd.Series, K: int) -> pd.DataFrame:
+        """
+        Description:
+        Find the nearest K neighbours using the euclidian distance
+        
+        Parameters:
+        dataPoint (pd.series): find the n
+        K (int): The number of integers to return
+        
+        """
+        self.K = K
+        indexStore = np.array([])
+        distanceStore = np.array([])
+        scaledDataPoint = scaleData(dataPoint)[0]
+
+        for i in range(self.scaledData.shape[0]):
+            distance = euclidianDistance(scaledDataPoint.squeeze(), self.scaledData.iloc[i, :])
+            if len(indexStore) == 0 or len(indexStore) < K:
+                indexStore = np.append(indexStore, i)
+                distanceStore = np.append(distanceStore, distance)
+            elif np.max(distanceStore) > distance:
+                indexStore[np.argmax(distanceStore)] = i
+                distanceStore[np.argmax(distanceStore)] = distance
+        
+        self.neighbours = self.data.loc[indexStore].copy()
+        return self.neighbours
+    
+    def showPlot(self) -> None:
+        """
+        Description:
+        Create a 3d plot of the first three dimensions
+        
+        Parameters:
+        None
+        """
+        # Create a 3D figure
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+
+        # Scatter plot of the first two columns and the regression line
+        legend = ["Data"]
+
+        cols = self.data.columns
+        scatterAll = ax.scatter(
+            self.data[cols[0]],
+            self.data[cols[1]],
+            self.data[cols[2]],
+            c= self.data[cols[0]],
+            marker='o',
+            alpha=0.2  # Set transparency level
+        )
+        if len(self.neighbours) > 0:
+            scatterNeighbours = ax.scatter(
+                self.neighbours[cols[0]],
+                self.neighbours[cols[1]],
+                self.neighbours[cols[2]],
+                c='black',
+                marker='o',
+                alpha=1  # Set transparency level
+            )
+            legend.append(f'{self.K} Nearest Neighoburs')
+            
+        ax.set_xlabel(cols[0]); ax.set_ylabel(cols[1]); ax.set_zlabel(cols[2])
+        ax.legend(legend)
+        ax.set_title('K Nearest Neighbours')
+        # Animation function to update view angle
+        def update(frame):
+            ax.view_init(elev=30, azim=frame)  # Change azimuth angle
+            return ax,
+
+        # Create animation
+        self.ani =  FuncAnimation(fig, update, frames=360, interval=30, blit=False)
+        
+        plt.show()
+        
+    def saveAnimation(self, name: str) -> None:
+        """
+        Description:
+        Save the plot animation as a gif
+        
+        Parameters:
+        name (string): The name of the file
+        """
+        assert self.ani is not None
+        self.ani.save(f'{name}.gif', writer=PillowWriter(fps=30))
