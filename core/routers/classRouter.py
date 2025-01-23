@@ -1,4 +1,5 @@
-# Contains routes all classes into one file from the library
+# Routes all classes into one file
 
 from core.linearRegression import *
 from core.kNearestNeighbours import *
+from core.hyperParameterRegression import *

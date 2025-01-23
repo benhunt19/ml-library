@@ -90,4 +90,4 @@ def testVisuliseNeighbours() -> None:
     K = 8
     neighbours = KNN.findNeighbours(testRow, K)
     KNN.showPlot()
-    # KNN.saveAnimation(name='kNearestNeighbours')
+    KNN.saveAnimation(name='kNearestNeighbours')

@@ -128,21 +128,10 @@ class KNearestNeighbours:
             return ax,
 
         # Create animation
-        self.ani =  FuncAnimation(fig, update, frames=360, interval=30, blit=False)
+        self.ani =  FuncAnimation(fig, update, frames=360, interval=15, blit=False)
         
         plt.show()
         
-    def saveAnimation(self, name: str) -> None:
-        """
-        Description:
-        Save the plot animation as a gif
-        
-        Parameters:
-        name (string): The name of the file
-        """
-        assert self.ani is not None
-        self.ani.save(f'media/{name}.gif', writer=PillowWriter(fps=30))
-    
     def showPlotScaled(self) -> None:
         """
         Description:
@@ -199,6 +188,17 @@ class KNearestNeighbours:
             return ax,
 
         # Create animation
-        self.ani =  FuncAnimation(fig, update, frames=360, interval=30, blit=False)
+        self.ani =  FuncAnimation(fig, update, frames=120, interval=30, blit=False)
         
         plt.show()
+        
+    def saveAnimation(self, name: str) -> None:
+        """
+        Description:
+        Save the plot animation as a gif
+        
+        Parameters:
+        name (string): The name of the file
+        """
+        assert self.ani is not None
+        self.ani.save(f'media/{name}.gif', writer=PillowWriter(fps=27))
