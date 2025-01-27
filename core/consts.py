@@ -1,0 +1,1 @@
+plotlyLocation = './plotly'

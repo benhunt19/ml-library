@@ -91,3 +91,32 @@ def testVisuliseNeighbours() -> None:
     neighbours = KNN.findNeighbours(testRow, K)
     KNN.showPlot()
     KNN.saveAnimation(name='kNearestNeighbours')
+
+def testVisuliseNeighboursPlotly() -> None:
+    """
+    Description: Test the show plot animation method
+    
+    Parameters:
+    None
+    """
+    # Load data from a CSV file into a pandas DataFrame
+    data = pd.read_csv('data/house_data_clean.csv')
+    
+    # Three dimensions for graphical interpretation
+    cols = pd.Index([
+        'sqft_lot',
+        'sqft_living',
+        'price',
+    ])
+    
+    # Select certain columns from the DataFrame
+    rowLim = 123
+    dataToCompare = data.loc[0:rowLim, cols].copy()
+    values = data.loc[0:rowLim, 'price'].copy()
+    KNN = KNearestNeighbours(dataToCompare, values)
+    KNN.scaleData()
+    testRow = data.loc[rowLim + 1, cols].copy()
+    # print('testRow', testRow)
+    K = 8
+    neighbours = KNN.findNeighbours(testRow, K)
+    KNN.showPlotScaledPlotly()

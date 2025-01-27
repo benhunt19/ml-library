@@ -15,4 +15,5 @@ if __name__ == '__main__':
     # K NEAREST NEIGHBOURS
     # testScaleData()
     # testKNearestNeighbours()
-    testHyperParameterRegression()
+    # testHyperParameterRegression()
+    testVisuliseNeighboursPlotly()
