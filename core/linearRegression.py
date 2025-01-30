@@ -13,8 +13,8 @@ class LinearRegression:
     Supervised Learning
     
     Paramaters:
-    data (DataFrame): the data to run regression on, there
-    values (Series): the data to run regression on, there
+    data (DataFrame): the data to run the regression on
+    values (Series): the actual values (labels) of the outcomes
     """
     def __init__(self, data: pd.DataFrame, values: pd.Series) -> None:
         self.data = data                    # Dataframe for data, one column per feature
@@ -41,6 +41,7 @@ class LinearRegression:
         bStart = 1
         self.B = np.zeros(len(features)) + bStart # Initialize the betas
         self.bIterations = [self.B.copy()]
+        
         # The algorithm aims to minimise the Residual Sum of Squares.
         # We follow gradient descent, moving each paranater in the oppisite
         # direction of the direction of the steepest slope. We then iteratively

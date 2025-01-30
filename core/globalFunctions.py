@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from math import exp
 
 # GLOBAL FUNCTIONS TO USE THROUGHOUT THE LIBARY
 
@@ -45,3 +46,14 @@ def euclidianDistance(row1: pd.Series, row2:pd.Series) -> float:
         sum += pow(row1.iat[i] - row2.iat[i], 2)
     return pow(sum, 0.5)
     
+def sigmoid(data: np.array, beta: np.array) -> float:
+    """
+    Definition:
+    Findoing the sigmoid of a current datapoint given a current linear coefficients
+    
+    Parameters:
+    data (Series): A point of data, with p features
+    beta (Series): The current linear p + 1 coefficients
+    """
+    exponent = beta.dot(data).sum()
+    return 1 / (1 + exp(-exponent))

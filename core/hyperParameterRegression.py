@@ -11,6 +11,9 @@ class HyperParameterRegression:
     Performs various regressions for hyperparameter adjustments,
     this is done in the validation phase of training
     
+    Type:
+    Validation methods
+    
     Parameters:
     None
     """

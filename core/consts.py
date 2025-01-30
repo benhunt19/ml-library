@@ -1,1 +1,3 @@
+# Global Consts
+
 plotlyLocation = './plotly'

@@ -16,4 +16,9 @@ if __name__ == '__main__':
     # testScaleData()
     # testKNearestNeighbours()
     # testHyperParameterRegression()
-    testVisuliseNeighboursPlotly()
+    # testVisuliseNeighboursPlotly()
+    
+    # testLogisticRegressionBinaryUpdate()
+    # testLogisticRegressionGradientDescent()
+    testLogisticRegressionPlot()
+    
