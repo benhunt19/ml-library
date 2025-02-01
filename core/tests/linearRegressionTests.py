@@ -87,3 +87,33 @@ def testPlotting() -> None:
         values=values
     )
     linReg.showPlot()
+
+def testPlottingPlotly() -> None:
+    """
+    Description:
+    Test plotting the data with the linear regression line
+    
+    Parameters:
+    None
+    """
+    # generate random datapoints
+    maxInt = 50
+    c = 20 # 'y intercept'
+    variance = 50
+    pointCount = 200
+    x = np.random.rand(pointCount) * maxInt
+    y = x * 2 + np.random.rand(pointCount) * variance
+    z = x + 2 * y + np.random.rand(pointCount) * variance + c
+    
+    data = pd.DataFrame({
+        'Feature A': x,
+        'Feature B': y
+    })    
+    values = pd.Series(z)
+    linReg = LinearRegression(
+        data=data,
+        values=values
+    )
+    alpha = 0.00002; iterations = 500
+    linReg.gradientDescent(alpha, iterations)
+    linReg.showPlotScaledPlotly()

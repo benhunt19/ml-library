@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.animation import FuncAnimation, PillowWriter
-from core.globalFunctions import sigmoid
+from core.globalFunctions import sigmoid, scaleData
 
 class LogisticRegression:
     """
@@ -56,6 +56,21 @@ class LogisticRegression:
             
         return self
     
+    def scaleData(self) -> None:
+        """
+        Description:
+        Scales the data along by the mean and squashes in by the variance.
+        This essentially normalises the data so when the nearest neighbour
+        algo is run, the difference values are weighted correctly.
+        
+        Parameters:
+        None
+        """
+        print("Scaling data...")
+        self.scaledData, self.mean, self.variance = scaleData(self.data)
+        self.X = self.scaledData.copy(deep=True)
+        self.X.insert(0, 'const', 1)
+    
     def _overHalf(val: float) -> int:
         """
         Description:
@@ -66,7 +81,7 @@ class LogisticRegression:
         """
         return 1 if val > 0.5 else 1
     
-    def gradientDescent(self, alpha: float, threshold: float) -> any:
+    def maxiumumLikelihood(self, alpha: float, threshold: float, useScaled=False) -> any:
         """
         Description:
         Apply the gradient descent algorithm to find the hyperplane that best intersects the data.
@@ -77,14 +92,20 @@ class LogisticRegression:
         alpha (float): Learning rate of the function
         threshold (float): error interval to run the function until
         """
+        # Scale data if kwrarg flag set
+        if useScaled:
+            # potentially remove binary
+            self.dataToBinary()
+            self.scaleData()
+            
         
         # Initialise the betas, between -1 and 1
-        self.B = pd.Series(np.random.random(len(self.X.columns)) * 2 - 1)
+        self.B = pd.Series(np.random.random(len(self.X.columns)))
         print(self.B)
         
         # Run the iterative update to the betas...
-        startLooCount = 100
-        for i in range(startLooCount):
+        startLoopCount = 20
+        for i in range(startLoopCount):
             # for each beta / feature
             for j in range(len(self.B)):
                 
@@ -94,46 +115,39 @@ class LogisticRegression:
                     valDiff[val] = self.values.iloc[val] - sigmoid(self.X.iloc[val, :].to_numpy(), self.B.to_numpy())
                 
                 # Update betas
-                np.multiply(valDiff, self.X.iloc[:, j].to_numpy()).sum()
-                
-        print(self.B)
+                self.B[j] = self.B[j] + alpha * (1 / self.X.shape[0]) * np.multiply(valDiff, self.X.iloc[:, j].to_numpy()).sum()
+            # print(self.B)
+            
         return self
         
     def showPlot(self) -> any:
+        """
+        """
+        assert len(self.B) > 0, "Please run gradient descent to generate betas for the hyperplane"
         
-        # Define the normal vector (a, b, c)
-        normal_vector = np.array([1, 2, 3])  # Example normal vector
-
-        # Define a point on the plane (x0, y0, z0)
-        point_on_plane = np.array([1, 1, 1])  # Example point on the plane
-
-        # Extract components of the normal vector
-        a, b, c = normal_vector
-
-        # Extract the point (x0, y0, z0)
-        x0, y0, z0 = point_on_plane
-
-        # Create a mesh grid for x and y values
-        x = np.linspace(-10, 10, 400)
-        y = np.linspace(-10, 10, 400)
-        X, Y = np.meshgrid(x, y)
-
-        # Calculate the corresponding Z values using the plane equation
-        Z = -(a * (X - x0) + b * (Y - y0)) / c + z0
-
-        # Plotting the surface
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
 
-        # Plot the surface
-        ax.plot_surface(X, Y, Z, cmap='viridis')
-
-        # Labels and title
-        ax.set_xlabel('X')
-        ax.set_ylabel('Y')
-        ax.set_zlabel('Z')
-        ax.set_title('Surface with Normal Vector')
-
-        plt.show()
+        # Scatter plot of the first two columns and the regression line
+        cols = self.X.columns
+        scatter = ax.scatter(
+            self.X[cols[1]],
+            self.X[cols[2]],
+            self.X[cols[3]],
+            c=self.values,
+            marker='o'
+        )
         
+        # Set labels
+        ax.set_title("Logistic Regression Model")
+        ax.set_xlabel(cols[1]); ax.set_ylabel(cols[2]); ax.set_zlabel(cols[3])
+        # Animation function to update view angle
+        def update(frame):
+            ax.view_init(elev=30, azim=frame)  # Change azimuth angle
+            return ax,
+
+        # Create animation
+        # self.ani =  FuncAnimation(fig, update, frames=360, interval=30, blit=False)
+        
+        plt.show()        
         return self

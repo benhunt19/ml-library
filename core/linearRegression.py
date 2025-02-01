@@ -3,6 +3,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.animation import FuncAnimation, PillowWriter
+from core.consts import plotlyLocation
+import plotly.graph_objects as go # Plotly special
+import json
 
 class LinearRegression:
     """
@@ -131,6 +134,80 @@ class LinearRegression:
         self.ani =  FuncAnimation(fig, update, frames=360, interval=30, blit=False)
         
         plt.show()
+    
+    def showPlotScaledPlotly(self)-> None:
+        """
+        Description:
+        Create a 3D plot of the first three dimensions for the scaled data
+        
+        Parameters:
+        None
+        """
+        cols = self.data.columns
+
+        # Scatter plot
+        scatter = go.Scatter3d(
+            x=self.data[cols[0]],
+            y=self.data[cols[1]],
+            z=self.values,
+            mode='markers',
+            marker=dict(size=5, color=self.values, colorscale='Viridis', opacity=0.8),
+            name='Data'
+        )
+
+        # Regression lines
+        minX, maxX = self.data[cols[0]].min(), self.data[cols[0]].max()
+        minY, maxY = self.data[cols[1]].min(), self.data[cols[1]].max()
+        points = 100
+        xLin = np.linspace(minX, maxX, points)
+        yLin = np.linspace(minY, maxY, points)
+
+        regression_lines = []
+        legend = ['Data']
+        legendLim = 10
+
+        if len(self.bIterations) > 0:
+            for i, iteration in enumerate(self.bIterations[:legendLim]):
+                zTmp = iteration[0] + iteration[1] * xLin + iteration[2] * yLin
+                line = go.Scatter3d(
+                    x=xLin, y=yLin, z=zTmp,
+                    mode='lines',
+                    line=dict(width=4),
+                    name=f'Iter {i}'
+                    
+                )
+                regression_lines.append(line)
+                legend.append(f'Iter {i}')
+
+        if len(self.B) > 0:
+            z = self.B[0] + self.B[1] * xLin + self.B[2] * yLin
+            final_line = go.Scatter3d(
+                x=xLin, y=yLin, z=z,
+                mode='lines',
+                line=dict(color='red', width=4),
+                name='Final'
+            )
+            regression_lines.append(final_line)
+            legend.append('Final')
+
+        # Layout
+        layout = go.Layout(
+            title='Linear Regression Model',
+            scene=dict(
+                xaxis_title=cols[0],
+                yaxis_title=cols[1],
+                zaxis_title='Output'
+            )
+        )
+
+        fig = go.Figure(data=[scatter] + regression_lines, layout=layout)
+        fig.show()
+        fig_json = fig.to_json()
+
+        # Optionally, save the JSON to a file
+        with open(f'{plotlyLocation}/linearRegression.json', 'w') as f:
+            json.dump(fig_json, f)
+        
     
     def saveAnimation(self, name: str) -> None:
         """

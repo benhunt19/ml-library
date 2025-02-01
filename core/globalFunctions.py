@@ -56,4 +56,4 @@ def sigmoid(data: np.array, beta: np.array) -> float:
     beta (Series): The current linear p + 1 coefficients
     """
     exponent = beta.dot(data).sum()
-    return 1 / (1 + exp(-exponent))
+    return 1 / (1 + (exp(-exponent) if exponent > -10 else 0))

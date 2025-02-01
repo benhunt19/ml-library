@@ -11,6 +11,7 @@ if __name__ == '__main__':
     # testGradientDescent()
     # testAnalyticalSolution()
     # testPlotting()
+    testPlottingPlotly()
 
     # K NEAREST NEIGHBOURS
     # testScaleData()
@@ -19,6 +20,5 @@ if __name__ == '__main__':
     # testVisuliseNeighboursPlotly()
     
     # testLogisticRegressionBinaryUpdate()
-    # testLogisticRegressionGradientDescent()
-    testLogisticRegressionPlot()
-    
+    # testLogisticRegressionMaxiumumLikelihood()
+    # testLogisticRegressionPlot()
