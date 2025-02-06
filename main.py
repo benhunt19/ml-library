@@ -4,14 +4,13 @@
 from core.routers.classRouter import *
 from core.routers.testRouter import *
 
-# Main executable
-if __name__ == '__main__':
+def main() -> None:
     
     # GRADIENT DESCENT
     # testGradientDescent()
     # testAnalyticalSolution()
     # testPlotting()
-    testPlottingPlotly()
+    # testPlottingPlotly()
 
     # K NEAREST NEIGHBOURS
     # testScaleData()
@@ -19,6 +18,15 @@ if __name__ == '__main__':
     # testHyperParameterRegression()
     # testVisuliseNeighboursPlotly()
     
+    # LOGISTIC REGRESSION
     # testLogisticRegressionBinaryUpdate()
     # testLogisticRegressionMaxiumumLikelihood()
     # testLogisticRegressionPlot()
+    # plotlyTestAnimate()
+    
+    # AUTO REGRESSION
+    testSimulateAR1()
+
+# Main executable
+if __name__ == '__main__':
+    main()

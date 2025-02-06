@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.animation import FuncAnimation, PillowWriter
 from core.globalFunctions import sigmoid, scaleData
+import plotly.graph_objects as go # Plotly special
 
 class LogisticRegression:
     """
@@ -24,7 +25,8 @@ class LogisticRegression:
         self.values = values                # Series for the avtual values
         self.features = self.data.columns   # List of all features in the dataset
         self.X = self.data.copy(deep=True)  # Copy the data to a new dataframe
-        self.X.insert(0, 'const', 1)        # Initialise the constnt component of the matrix
+        self.const = 'const'                # For use in the y intercept column
+        self.X.insert(0, self.const, 1)        # Initialise the constnt component of the matrix
         self.B = []                         # The betas (coefficients) we will find
         self.bIterations = []               # The iterations of the betas for gradient descent
     
@@ -67,9 +69,9 @@ class LogisticRegression:
         None
         """
         print("Scaling data...")
-        self.scaledData, self.mean, self.variance = scaleData(self.data)
+        self.scaledData, self.mean, self.variance = scaleData(self.X.loc[:, [col for col in self.X.columns if col != self.const]])
         self.X = self.scaledData.copy(deep=True)
-        self.X.insert(0, 'const', 1)
+        self.X.insert(0, self.const, 1)
     
     def _overHalf(val: float) -> int:
         """
@@ -122,6 +124,8 @@ class LogisticRegression:
         
     def showPlot(self) -> any:
         """
+        Description:
+        Show the plot to display the first three features in the data set self.X
         """
         assert len(self.B) > 0, "Please run gradient descent to generate betas for the hyperplane"
         
@@ -150,4 +154,72 @@ class LogisticRegression:
         # self.ani =  FuncAnimation(fig, update, frames=360, interval=30, blit=False)
         
         plt.show()        
+        return self
+
+    def showPlotPlotly(self):
+        """
+        Description:
+        Show a plotly plot for the values created as part of the logistic regression
+        """
+        
+        assert len(self.B) > 0, "Please run gradient descent to generate betas for the hyperplane"
+
+        cols = self.X.columns
+
+        # Create the 3D scatter plot
+        fig = go.Figure(
+            data=[
+                go.Scatter3d(
+                    x=self.X[cols[1]],
+                    y=self.X[cols[2]],
+                    z=self.X[cols[3]],
+                    mode='markers',
+                    marker=dict(
+                        size=5,
+                        color=self.values,
+                        colorscale='Viridis',
+                        opacity=0.8
+                    )
+                )
+            ],
+            layout=go.Layout(
+                title="Logistic Regression Model",
+                scene=dict(
+                    xaxis_title=cols[1],
+                    yaxis_title=cols[2],
+                    zaxis_title=cols[3]
+                ),
+                updatemenus=[{
+                    "buttons": [
+                        {
+                            "args": [None, {"frame": {"duration": 50, "redraw": True}, "fromcurrent": True}],
+                            "label": "Play",
+                            "method": "animate"
+                        },
+                        {
+                            "args": [[None], {"frame": {"duration": 0, "redraw": True}, "mode": "immediate"}],
+                            "label": "Pause",
+                            "method": "animate"
+                        }
+                    ],
+                    "direction": "left",
+                    "pad": {"r": 10, "t": 87},
+                    "showactive": False,
+                    "type": "buttons",
+                    "x": 0.1,
+                    "xanchor": "right",
+                    "y": 0,
+                    "yanchor": "top"
+                }]
+            ),
+            frames=[
+                go.Frame(
+                    layout=go.Layout(
+                        scene_camera=dict(eye=dict(x=np.cos(np.radians(angle)), y=np.sin(np.radians(angle)), z=0.5))
+                    )
+                ) for angle in range(0, 360, 5)
+            ]
+        )
+
+        fig.show()
         return self

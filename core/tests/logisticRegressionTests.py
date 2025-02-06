@@ -82,3 +82,36 @@ def testLogisticRegressionPlot() -> None:
     lr.maxiumumLikelihood(alpha, thresh, useScaled=True)
     # print(lr.X)
     lr.showPlot()
+    
+def plotlyTestAnimate() -> None:
+    """"""
+    """
+    Description:
+    Perform a logistic regression using gradient descent on a dataset
+    """
+    
+    df = pd.read_csv("./data/car_crash_survival.csv")
+    print("Original DataFrame:")
+    # print(df)
+    
+    cols = df.columns
+    print(cols)
+    # Remove any row containing at least one NaN
+    df_clean = df.dropna()
+    limLength = 500
+    df_clean = df_clean.iloc[0 : limLength, :]
+    # print(df_clean)
+
+    y = df_clean.loc[0 : limLength, 'Survived']
+    # Age,Gender,Speed_of_Impact,Helmet_Used,Seatbelt_Used,Survived
+    testCols = ['Age', 'Speed_of_Impact', 'Seatbelt_Used']
+    x = df_clean.loc[:, testCols]
+    # print(x.columns.to_numpy())
+            
+    lr = LogisticRegression(x, y).dataToBinary()
+    alpha = 0.001
+    thresh = 0.5
+    lr.maxiumumLikelihood(alpha, thresh, useScaled=True)
+    # print(lr.X)
+    lr.showPlotPlotly()
+    
