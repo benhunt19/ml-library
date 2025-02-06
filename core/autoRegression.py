@@ -36,31 +36,68 @@ class AutoRegression:
         plt.plot(self.timeSeries)
         plt.xlabel("Timestep")
         plt.ylabel("Value")
-        title = fr"AR1 Simulation: $\alpha$ = {alpha}, $\sigma^2$ = {variance}" if type(variance) != type(None) and type(alpha) != type(None) else "AR1 Simulation"
+        title = fr"AR Simulation: $\alpha$ = {alpha}, $\sigma^2$ = {variance}" if type(variance) != type(None) and type(alpha) != type(None) else "AR Simulation"
         plt.title(title)
         plt.scatter(range(len(self.timeSeries)), self.timeSeries, color='red', s=10)
         plt.show()
     
-    def simulateAR1(self, start: float, alpha: float, variance: float, timesteps=defaultTimesteps, plot=False):
+    def simulateARN(self, start: float, coefficients: float, variance: float, timesteps=defaultTimesteps, plot=False):
         """
         Description:
-        Simulate AR1 processes from a start price
+        Simulate Auto Regression to the Nth degres from a start price and a list of coefficients
         
         Parameters:
         start (float): The start price of the asset
-        alpha (flloat): The rate at which the asset converges (or not)
+        coefficients (list / iterable floats): The rate at which the asset converges (or not)
         variance (float): The variance on the gaussian noise per timestep
         timesteps (int): The number of timesteps to run for 
         plot (boolean): Plot the timeseries
         """
-        curVal = start
+        # Reset time timeseries incase it has been entered elsewhere
+        numCoefficients = len(coefficients)
+        self.timeSeries = pd.Series([start for i in range(numCoefficients)])
         for i in range(timesteps):
-            theRand = np.random.randn()
-            curVal = alpha * curVal + theRand
-            self.timeSeries[i] = curVal
+            nextVal = 0
+            for index, coef in enumerate(coefficients):
+                nextVal += self.timeSeries[i + numCoefficients - 1 - index] * coef
+            nextVal += np.random.randn() * variance
+            self.timeSeries.loc[len(self.timeSeries)] = nextVal
+        self.timeSeries = self.timeSeries.loc[numCoefficients : ].reset_index(drop=True)
         
         if plot:
-            self.plotTimeseries(alpha=alpha, variance=variance)
+            self.plotTimeseries()
+            
+    def simulateAR1(self, start: float, alpha: float, variance: float, timesteps=defaultTimesteps, plot=False) -> any:
+        """
+        Description:
+        Simulate a one step auto regressive processes from a start price
+        
+        Parameters:
+        start (float): The start price of the asset
+        alpha (float): The rate at which the asset converges (or not)
+        variance (float): The variance on the gaussian noise per timestep
+        timesteps (int): The number of timesteps to run for 
+        plot (boolean): Plot the timeseries
+        """
+        # Reset time timeseries incase it has been entered elsewhere
+        self.simulateARN(
+            coefficients=pd.Series([alpha]),
+            start=start,
+            variance=variance,
+            timesteps=timesteps,
+            plot=plot
+        )
+        return self
+        
+    def simulateVAR(self, coefficientMatrix: np.array) -> any:
+        """
+        Description:
+        Simulate a VAR process where
+        
+        Paramaters:
+        coefficientMatrix (np.array): Coefficient matrix (needs to be square)
+        """
+        
         
         
     def AR1(self, timeseries: pd.Series, alpha: float, variance: float, timesteps=252):

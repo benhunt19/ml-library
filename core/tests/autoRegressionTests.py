@@ -41,6 +41,30 @@ def testSimulateAR1() -> None:
     }
     ar3 = AutoRegression().simulateAR1(**params3)
     
+def testSimulateARN() -> None:
+    """
+    Description:
+    Simulate Auto Regression over N amounts of steps
+    
+    Paramaters:
+    """
+    # Testing a AR(3) model
+    params1 = {
+        "coefficients": [0.2, 0.4, 0.3],
+        "variance": 1,
+        "start": 0,
+        "plot": True
+    }
+    ar1 = AutoRegression().simulateARN(**params1)
+    
+    params2 = {
+        "coefficients": [0.2, 0.4, 0.3, 0.1, 0.4, -0.3, -0.2],
+        "variance": 1,
+        "start": 10,
+        "plot": True
+    }
+    ar2 = AutoRegression().simulateARN(**params2)
+    
 def testAR1() -> None:
     """
     Description:
@@ -49,7 +73,6 @@ def testAR1() -> None:
     Parameters:
     None
     """
-
     apple_ticker = "AAPl"
     startDate = datetime.datetime.now() - datetime.timedelta(days=365)
     endDate = datetime.datetime.now()

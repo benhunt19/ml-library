@@ -25,7 +25,8 @@ def main() -> None:
     # plotlyTestAnimate()
     
     # AUTO REGRESSION
-    testSimulateAR1()
+    # testSimulateAR1()
+    testSimulateARN()
 
 # Main executable
 if __name__ == '__main__':
