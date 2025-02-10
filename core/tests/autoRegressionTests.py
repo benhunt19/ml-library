@@ -65,6 +65,94 @@ def testSimulateARN() -> None:
     }
     ar2 = AutoRegression().simulateARN(**params2)
     
+def testSimulateVAR() -> None:
+    startVals = [
+        50,
+        60
+    ]
+    arr1 = np.array(
+        [
+            [0.1, 0.2],
+            [0.1, 0.2]
+        ]
+    )
+    arr2 = np.array(
+        [
+            [-0.1, 0.5],
+            [0.15, -0.4]
+        ]
+    )
+    # Create an array of of matricies
+    coefs = [
+        arr1.copy(),
+        arr2.copy()
+    ]
+    variance = 3
+    timesteps = 100
+    var = AutoRegression().simulateVAR(
+        coefficientMatrix=coefs,
+        startVals=startVals,
+        variance=variance,
+        plot=True,
+        timesteps=timesteps
+    )
+    
+def testSimulateVAR3d() -> None:
+    startVals = [
+        50,
+        60,
+        100
+    ]
+    arr1 = np.array(
+        [
+            [2.8, 0.2, 0.5],
+            [2.8, 0.2, 0.2],
+            [2.8, 0.2, -0.1]
+        ]
+    )
+    arr2 = np.array(
+        [
+            [-0.1, 0.1, 0.1],
+            [0.15, -0.3, 0.3],
+            [0.15, -0.2, 0.1]
+        ]
+    )
+    # Create an array of of matricies
+    coefs = [
+        arr1.copy(),
+        arr2.copy(),
+    ]
+    variance = 3
+    timesteps = 100
+    var = AutoRegression().simulateVAR(
+        coefficientMatrix=coefs,
+        startVals=startVals,
+        variance=variance,
+        plot=True,
+        timesteps=timesteps
+    )
+    
+def testSimulateVARrand() -> None:
+    dimensions = 2
+    maxPrice = 150
+    startVals = np.random.rand(dimensions) * maxPrice
+    arr1 = np.random.rand(dimensions, dimensions) - 1
+    arr2 = np.random.rand(dimensions, dimensions) - 1
+    # Create an array of of matricies
+    coefs = [
+        arr1.copy(),
+        arr2.copy(),
+    ]
+    variance = 3
+    timesteps = 100
+    var = AutoRegression().simulateVAR(
+        coefficientMatrix=coefs,
+        startVals=startVals,
+        variance=variance,
+        plot=True,
+        timesteps=timesteps
+    )
+
 def testAR1() -> None:
     """
     Description:

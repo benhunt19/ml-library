@@ -26,7 +26,10 @@ def main() -> None:
     
     # AUTO REGRESSION
     # testSimulateAR1()
-    testSimulateARN()
+    # testSimulateARN()
+    # testSimulateVAR()
+    # testSimulateVAR3d()
+    testSimulateVARrand()
 
 # Main executable
 if __name__ == '__main__':
